@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "kwak0.queuestatus.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"ClientPlayNetworkHandlerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"mixins": [
+		"ClientConnectionMixin"
+	]
+}
