@@ -11,6 +11,8 @@ import java.net.*;
 
 
 public class Post {
+    static final String flaskAddress = "http://127.0.0.1:5000/";
+
     public static boolean connected;
     public static int position;
     public static String username;
@@ -24,7 +26,7 @@ public class Post {
 
     public static String PostRequest() throws IOException, URISyntaxException {
         String data = "{\"username\": \"%s\", \"position\": \"%s\", \"connected\": \"%s\"}".formatted(Post.username, Post.position, Post.connected);
-        URL url = new URI("http://127.0.0.1:5000/").toURL();
+        URL url = new URI(flaskAddress).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
@@ -42,6 +44,10 @@ public class Post {
         }
         catch (ConnectException e) {
             System.out.println("2b2t queue server not online");
+            return null;
+        }
+        catch (IOException e) {
+            System.out.println("Response: " + connection.getResponseMessage());
             return null;
         }
     }

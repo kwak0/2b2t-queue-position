@@ -1,4 +1,5 @@
 from flask import render_template, request
+import json
 
 players = []
 
@@ -28,7 +29,7 @@ def queue_post():
         if connected:
             players.append(data)
 
-    return players
+    return json.dumps(player)
 
 def queue_get():
     global players
@@ -39,15 +40,16 @@ def queue_get():
     for player in players:
         username = player["username"]
         position = player["position"]
-        message_list.append(f"{username} is currently in position {position}.")    
-    match clients:
-        case 1: title = f"{username}: {position}"
-        case _: title = header
+        message_list.append(f"{username} is currently in position {position}.")   
+    if clients == 1:  
+        title = f"{username}: {position}"
+    else:
+        title = header
 
     size = 2.5
     message = ""
     for line in message_list:
         message += f"<p>{line}</p>"
 
-    return render_template("index.html", title=title, header=header, message=message, size=size)
+    return render_template("queue_position.html", title=title, header=header, message=message, size=size)
 

@@ -1,5 +1,6 @@
 package kwak0.queuestatus.mixin.client;
 
+import io.netty.channel.local.LocalAddress;
 import kwak0.queuestatus.Post;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.ClientConnection;
@@ -36,9 +37,11 @@ abstract class ClientPlayNetworkHandlerMixin {
 	}
 	@Inject(method = "onGameJoin", at = @At("RETURN"))
 	private void onGameJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
-		InetSocketAddress inetSocketAddress = (InetSocketAddress) Post.client.getNetworkHandler().getConnection().getAddress();
-		Post.address = inetSocketAddress.getHostName();
-		Post.connected = true;
+		if (Post.client.getNetworkHandler().getConnection().getAddress().getClass() != LocalAddress.class) {
+			InetSocketAddress inetSocketAddress = (InetSocketAddress) Post.client.getNetworkHandler().getConnection().getAddress();
+			Post.address = inetSocketAddress.getHostName();
+			Post.connected = true;
+		}
 	}
 }
 @Mixin(ClientConnection.class)
