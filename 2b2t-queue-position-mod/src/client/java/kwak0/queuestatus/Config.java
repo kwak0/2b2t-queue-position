@@ -1,6 +1,7 @@
 package kwak0.queuestatus;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileReader;
@@ -9,16 +10,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Config {
-    String flaskAddress;
+    public String flaskAddress;
+    public boolean debug;
 
     private Config() {
         this.flaskAddress =  "http://127.0.0.1:5000/";
+        this.debug = false;
     }
 
     public static Config loadConfig() {
         Config config;
         Path path = getConfigFilePath();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         if (Files.exists(path)) {
             try (FileReader reader = new FileReader(path.toFile())) {
@@ -28,11 +31,11 @@ public class Config {
             }
         } else {
             config = new Config();
-        }
-        try {
-            Files.writeString(path, gson.toJson(config));
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't update config file", e);
+            try {
+                Files.writeString(path, gson.toJson(config));
+            } catch (IOException e) {
+                throw new RuntimeException("Couldn't update config file", e);
+            }
         }
 
         return config;
@@ -41,9 +44,4 @@ public class Config {
     private static Path getConfigFilePath() {
         return FabricLoader.getInstance().getConfigDir().resolve("2b2t_position_mod_config.json");
     }
-
-    public String getFlaskAddress() {
-        return flaskAddress;
-    }
-
 }

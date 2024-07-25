@@ -1,9 +1,5 @@
 package kwak0.queuestatus;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.session.Session;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,20 +9,11 @@ import java.net.*;
 
 public class Post {
     public static String flaskAddress;
-
-    public static boolean connected;
-    public static int position;
-    public static String username;
-
-    public static MinecraftClient client;
-    public static Session session;
-    public static String address;
-
     public static String message;
 
     public static String PostRequest() throws IOException, URISyntaxException {
-        flaskAddress = Config.loadConfig().flaskAddress;
-        String data = "{\"username\": \"%s\", \"position\": \"%s\", \"connected\": \"%s\"}".formatted(Post.username, Post.position, Post.connected);
+        flaskAddress = Context.config.flaskAddress;
+        String data = "{\"username\": \"%s\", \"position\": \"%s\", \"connected\": \"%s\"}".formatted(Context.username, Context.position, Context.connected);
         try {
             URL url = new URI(flaskAddress).toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

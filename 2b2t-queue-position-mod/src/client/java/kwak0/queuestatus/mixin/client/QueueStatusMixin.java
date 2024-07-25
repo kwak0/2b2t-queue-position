@@ -1,5 +1,7 @@
 package kwak0.queuestatus.mixin.client;
 
+import kwak0.queuestatus.Config;
+import kwak0.queuestatus.Context;
 import kwak0.queuestatus.Post;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -26,14 +28,14 @@ import java.util.regex.Pattern;
 abstract class ClientPlayNetworkHandlerMixin {
 	@Inject(method = "onSubtitle", at = @At("HEAD"))
 	private void onSubtitle(SubtitleS2CPacket packet, CallbackInfo ci) throws IOException, URISyntaxException {
-		if ("connect.2b2t.org.".equals(Post.address)) {
+		if ("connect.2b2t.org.".equals(Context.address)) {
 			Post.message = packet.text().getString();
 			Pattern pattern = Pattern.compile("\\d+");
 			Matcher matcher = pattern.matcher(Post.message);
 			if (matcher.find()) {
 				String positionString = matcher.group();
-				if (Integer.parseInt(positionString) != Post.position) {
-					Post.position = Integer.parseInt(positionString);
+				if (Integer.parseInt(positionString) != Context.position) {
+					Context.position = Integer.parseInt(positionString);
 					Post.PostRequest();
 				}
 			}
@@ -41,10 +43,11 @@ abstract class ClientPlayNetworkHandlerMixin {
 	}
 	@Inject(method = "onGameJoin", at = @At("RETURN"))
 	private void onGameJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
-		if (Post.client.getNetworkHandler() != null && !Post.client.isInSingleplayer()) {
-			InetSocketAddress inetSocketAddress = (InetSocketAddress) Post.client.getNetworkHandler().getConnection().getAddress();
-			Post.address = inetSocketAddress.getHostName();
-			Post.connected = true;
+		Context.config = Config.loadConfig();
+		if (Context.client.getNetworkHandler() != null && !Context.client.isInSingleplayer()) {
+			InetSocketAddress inetSocketAddress = (InetSocketAddress) Context.client.getNetworkHandler().getConnection().getAddress();
+			Context.address = inetSocketAddress.getHostName();
+			Context.connected = true;
 		}
 	}
 }
@@ -52,18 +55,19 @@ abstract class ClientPlayNetworkHandlerMixin {
 abstract class ClientConnectionMixin {
 	@Inject(method = "disconnect", at = @At("HEAD"))
 	public void onDisconnect(Text disconnectReason, CallbackInfo ci) throws IOException, URISyntaxException {
-		if (Post.address != null) {
-			Post.connected = false;
-			Post.address = null;
+		if (Context.address != null) {
+			Context.connected = false;
+			Context.address = null;
 			Post.PostRequest();
 		}
 	}
 }
+
 @Mixin(MinecraftClient.class)
 abstract class KeyPressMixin {
 	@Inject(method = "handleInputEvents", at = @At("HEAD"))
 	private void onHandleInputEvents(CallbackInfo info) throws IOException, URISyntaxException {
-		if (InputUtil.isKeyPressed(Post.client.getWindow().getHandle(), GLFW.GLFW_KEY_G)) {
+		if (Context.config.debug && InputUtil.isKeyPressed(Context.client.getWindow().getHandle(), GLFW.GLFW_KEY_G)) {
 			System.out.println("G key was pressed!");
 			System.out.println(Post.PostRequest());
 		}
