@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "queuestatus",
+	"id": "queueposition",
 	"version": "${version}",
 	"name": "2b2t queue status",
 	"description": "Sends 2b2t queue status to my website.",

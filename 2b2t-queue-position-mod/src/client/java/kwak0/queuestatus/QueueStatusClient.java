@@ -10,10 +10,8 @@ public class QueueStatusClient implements ClientModInitializer {
 		Post.client = MinecraftClient.getInstance();
 		Post.session = Post.client.getSession();
 
-		Post.last_message = "";
-
+		Post.connected = false;
 		Post.username = Post.session.getUsername();
-
 	}
 
 }
